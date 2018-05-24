@@ -17,14 +17,21 @@ const map = {};
 const set = (key, val) => map[key] = val
 const get = (key) => map[key];
 const remove = (key) => delete map[key]
+const clear = () => map = {}
 ```
 ## Results
 
 ### TL;DR;
 
-* If you just need `get`, `set`, `remove` - just write your version of  `simplest-cache` (or use the one above)
+| Lib / feature | get | set | remove | clear | global TTL | per value TTL | max size limit |
+| - |:-:|:-:|:-:|:-:|:-:|:-:|-:|
+| simplest-cache | yes | yes | yes | yes | no | no | no |
+| fast-memory-cache | yes | yes | yes | yes | no | yes | no |
+| safe-memory-cache | yes | yes | no | yes | yes | no | yes |
+
+* If you just need `get`, `set`, `remove` - just write your version of `simplest-cache` (or use the one above)
 * If you need TTL (Time To Live) per value - use `fast-memory-cache`
-* If you need to control MAX size of your cache - use `safe-memory-cache`. It also supports global TTL (but no TTL per value)
+* If you need to control MAX size of your cache - use `safe-memory-cache`. It also supports global TTL (but no TTL per value). But it does not support `remove`
 
 ### Detailed results
 (duration is in ms)

@@ -1,16 +1,14 @@
-const size = 1000000;
-const times = 1;
+const SIZE = 1000000;
 
 const getData = size => [...Array(size)].reduce((data, key) => (data[Math.random()] = Math.random(), data), {});
-const Benchmark = require("benchmark");
-let memoryCacheSuite = new Benchmark.Suite("Memoty cache");
+const data = getData(SIZE);
 
 const cachesNames = [
     "cache-memory",
     "fast-memory-cache",
     "mem-cache",
     "memory-cache",
-    // "memorycache",
+    // "memorycache", // this one propmts tons of debug data
     "cache",
     "node-memory-cache",
     "safe-memory-cache",
@@ -20,8 +18,6 @@ const cachesNames = [
 const caches = cachesNames.reduce(
     (caches, cacheName) => (caches[cacheName] = require(`./src/adapters/${cacheName}`), caches), {}
 );
-
-const data = getData(size);
 
 const runTestCase = cache => {
     const keys = Object.keys(data);
@@ -33,7 +29,7 @@ const runTestCase = cache => {
 
     keys.forEach(cache.get);
 
-    for (let t = 0; t < 100; t++) {
+    for (let t = 0, l = SIZE / 2; t < l; t++) {
         const idx = Math.floor(Math.random() * keys.length);
 
         cache.remove(keys[idx]);
@@ -43,28 +39,15 @@ const runTestCase = cache => {
 const summary = [];
 
 Object.keys(caches).forEach(cacheName => {
-    try {
-        const now = Date.now();
-        for (let t = 0; t < times; t ++) {
-            runTestCase(caches[cacheName]);
-        }
-        summary.push({ name: cacheName, result: Date.now() - now });
-    } catch (e) {
-        summary.push({ name: cacheName, result: `Throws ${e.message}` });
-    };
+    const start = Date.now();
 
-    // memoryCacheSuite = memoryCacheSuite.add(cacheName, function() {
-    //     runTestCase(caches[cacheName]);
-    // });
+    runTestCase(caches[cacheName]);
+
+    summary.push({ lib: cacheName, duration: Date.now() - start });
 });
-//
-// memoryCacheSuite.on('complete', function() {
-//         console.log('Fastest is ' + this.filter('fastest').map('name'));
-//     })
-//     .run({
-//         'async': true
-//     });
 
-summary.sort((a,b) => a.result - b.result);
+summary.sort((a, b) => a.duration - b.duration);
 
 console.log(summary);
+
+process.exit();

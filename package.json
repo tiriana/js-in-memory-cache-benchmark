@@ -9,13 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "benchmark": "^2.1.4",
     "cache-memory": "^2.1.2",
     "fast-memory-cache": "^2.0.4",
     "mem-cache": "0.0.5",
     "memory-cache": "^0.2.0",
     "memorycache": "0.0.1",
-    "microtime": "^2.1.8",
     "node-memory-cache": "0.0.5",
     "safe-memory-cache": "^1.5.1"
   }

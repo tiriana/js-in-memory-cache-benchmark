@@ -1,7 +1,7 @@
 const caches = {
     "cache-memory": require("./src/adapters/cache-memory"),
     "fast-memory-cache": require("./src/adapters/fast-memory-cache"),
-    // "mem-cache": require("./src/adapters/mem-cache"), // this one is VEEERrr slow
+    // "mem-cache": require("./src/adapters/mem-cache"), // this one is VEEERYYY slow
     "memory-cache": require("./src/adapters/memory-cache"),
     // "memorycache": require("./src/adapters/memorycache"), // this one propmts tons of debug data
     "cache": require("./src/adapters/cache"),

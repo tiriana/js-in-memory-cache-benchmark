@@ -1,1 +1,3 @@
-console.log(require("./benchmark")(100000));
+console.log(require("./benchmark")(3000000));
+
+process.exit();

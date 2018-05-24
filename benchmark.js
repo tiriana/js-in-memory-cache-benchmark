@@ -1,11 +1,11 @@
 const caches = {
-    "cache-memory": require("./src/adapters/cache-memory"),
+    // "cache-memory": require("./src/adapters/cache-memory"),
     "fast-memory-cache": require("./src/adapters/fast-memory-cache"),
     // "mem-cache": require("./src/adapters/mem-cache"), // this one is VEEERYYY slow
-    "memory-cache": require("./src/adapters/memory-cache"),
+    // "memory-cache": require("./src/adapters/memory-cache"),
     // "memorycache": require("./src/adapters/memorycache"), // this one propmts tons of debug data
-    "cache": require("./src/adapters/cache"),
-    "node-memory-cache": require("./src/adapters/node-memory-cache"),
+    // "cache": require("./src/adapters/cache"),
+    // "node-memory-cache": require("./src/adapters/node-memory-cache"), // This one is the slowest
     "safe-memory-cache": require("./src/adapters/safe-memory-cache"),
     "simplest-cache": require("./src/adapters/simplest-cache")
 };
@@ -16,18 +16,14 @@ const benchmark = SIZE => {
 
     const runTestCase = cache => {
         const keys = Object.keys(data);
-        keys.forEach(key => {
-            const val = data[key];
 
-            cache.set(key, data[key]);
-        });
+        // caching values
+        keys.forEach(key => cache.set(key, data[key]));
 
-        keys.forEach(key => {
-            if (cache.get(key) !== data[key]) {
-                throw new Error(`${key} - got ${cache.get(key)}, expected ${data[key]}` );
-            }
-        });
+        // getting values
+        keys.forEach(cache.get);
 
+        // removing half of values
         for (let t = 0, l = SIZE / 2; t < l; t++) {
             const idx = Math.floor(Math.random() * keys.length);
 

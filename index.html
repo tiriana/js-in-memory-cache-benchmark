@@ -1,0 +1,15 @@
+<html>
+    <body>
+        <div>Running benchmark...</div>
+        <pre id="console"></pre>
+        <script src="./dist.js"></script>
+        <script>
+            var cons = document.getElementById("console");
+            setTimeout(function () {
+                var result = cacheBenchmark(100000);
+
+                cons.innerHTML = JSON.stringify(result, null, 2);
+            });
+        </script>
+    </body>
+</html>

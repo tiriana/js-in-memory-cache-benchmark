@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./run.js",
+    "build": "./node_modules/.bin/browserify benchmark.js > ./dist.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "assert": "^1.4.1",
+    "cache": "^2.1.0",
     "cache-memory": "^2.1.2",
     "fast-memory-cache": "^2.0.4",
     "mem-cache": "0.0.5",
@@ -16,5 +19,8 @@
     "memorycache": "0.0.1",
     "node-memory-cache": "0.0.5",
     "safe-memory-cache": "^1.5.1"
+  },
+  "devDependencies": {
+    "browserify": "^16.2.2"
   }
 }

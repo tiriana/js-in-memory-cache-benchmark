@@ -1,5 +1,5 @@
 var safeMemoryCache = require('safe-memory-cache');
-var instance = safeMemoryCache({});
+var instance = safeMemoryCache({ limit: 10000000 });
 
 const set = (key, val) => instance.set(key + "", val);
 const get = (key) => instance.get(key + "");

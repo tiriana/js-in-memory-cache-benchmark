@@ -154,4 +154,4 @@ const remove = (key) => delete map[key]
 
 ## Conclusion
 
-Differences in time for `fast-memory-cache`, `safe-memory-cache` and `simplest-cache` are very insignificant. So you just need to choose one basing on other feature which you and they do or don't provide.
+Differences in time for `fast-memory-cache`, `safe-memory-cache` and `simplest-cache` are very insignificant. So you just need to choose one based on other features which you need and they do or don't provide.

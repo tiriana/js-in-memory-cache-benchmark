@@ -9,6 +9,8 @@
 *   [cache](https://www.npmjs.com/package/cache)
 *   [node-memory-cache](https://www.npmjs.com/package/node-memory-cache)
 *   [safe-memory-cache](https://www.npmjs.com/package/safe-memory-cache)
+*   [hashlru](https://www.npmjs.com/package/hashlru)
+*   [ylru](https://www.npmjs.com/package/ylru)
 *   simplest-cache
 
 simplest-cache is my implementation and it's the most straight forward and naive in-memory implementation I could think of:
@@ -27,11 +29,13 @@ const clear = () => map = {}
 | - |:-:|:-:|:-:|:-:|:-:|:-:|-:|
 | simplest-cache | yes | yes | yes | yes | no | no | no |
 | fast-memory-cache | yes | yes | yes | yes | no | yes | no |
+| hashlru | yes | yes | yes | yes | yes | no | yes |
 | safe-memory-cache | yes | yes | no | yes | yes | no | yes |
+| ylru | yes | yes | no | yes | yes | no | yes |
 
 * If you just need `get`, `set`, `remove` - just write your version of `simplest-cache` (or use the one above)
 * If you need TTL (Time To Live) per value - use `fast-memory-cache`
-* If you need to control MAX size of your cache - use `safe-memory-cache`. It also supports global TTL (but no TTL per value). But it does not support `remove`
+* If you need to control MAX size of your cache - use `hashlru` | `safe-memory-cache` | `ylru`.
 
 ### Detailed results
 (duration is in ms)
@@ -112,29 +116,29 @@ const clear = () => map = {}
 ```
 
 #### for 2000000 elements
-(without `cache-memory`)
+(without `cache-memory`, BUT with `hashlru` and `ylru`)
 
 ```json
 [
   {
     "lib": "simplest-cache",
-    "duration": 2235
+    "duration": 2314
   },
   {
     "lib": "fast-memory-cache",
-    "duration": 2362
+    "duration": 2335
   },
   {
-    "lib": "memory-cache",
-    "duration": 2747
+    "lib": "hashlru",
+    "duration": 2363
   },
   {
     "lib": "safe-memory-cache",
-    "duration": 2925
+    "duration": 2811
   },
   {
-    "lib": "cache",
-    "duration": 3761
+    "lib": "ylru",
+    "duration": 3496
   }
 ]
 ```

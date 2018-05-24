@@ -8,7 +8,9 @@ const caches = {
     // "cache": require("./src/adapters/cache"),
     // "node-memory-cache": require("./src/adapters/node-memory-cache"), // This one is the slowest
     "safe-memory-cache": require("./src/adapters/safe-memory-cache"),
-    "simplest-cache": require("./src/adapters/simplest-cache")
+    "simplest-cache": require("./src/adapters/simplest-cache"),
+    "hashlru": require("./src/adapters/hashlru"),
+    "ylru": require("./src/adapters/ylru")
 };
 
 const benchmark = SIZE => {
@@ -56,7 +58,7 @@ if (typeof window !== 'undefined') {
   window.cacheBenchmark = benchmark;
 }
 
-},{"./src/adapters/fast-memory-cache":4,"./src/adapters/safe-memory-cache":5,"./src/adapters/simplest-cache":6}],2:[function(require,module,exports){
+},{"./src/adapters/fast-memory-cache":6,"./src/adapters/hashlru":7,"./src/adapters/safe-memory-cache":8,"./src/adapters/simplest-cache":9,"./src/adapters/ylru":10}],2:[function(require,module,exports){
 'use strict';
 
 /**
@@ -133,6 +135,59 @@ function createMap() {
 module.exports = MemoryCache;
 
 },{}],3:[function(require,module,exports){
+module.exports = function (max) {
+
+  if (!max) throw Error('hashlru must have a max value, of type number, greater than 0')
+
+  var size = 0, cache = Object.create(null), _cache = Object.create(null)
+
+  function update (key, value) {
+    cache[key] = value
+    size ++
+    if(size >= max) {
+      size = 0
+      _cache = cache
+      cache = Object.create(null)
+    }
+  }
+
+  return {
+    has: function (key) {
+      return cache[key] !== undefined || _cache[key] !== undefined
+    },
+    remove: function (key) {
+      if(cache[key] !== undefined)
+        cache[key] = undefined
+      if(_cache[key] !== undefined)
+        _cache[key] = undefined
+    },
+    get: function (key) {
+      var v = cache[key]
+      if(v !== undefined) return v
+      if((v = _cache[key]) !== undefined) {
+        update(key, v)
+        return v
+      }
+    },
+    set: function (key, value) {
+      if(cache[key] !== undefined) cache[key] = value
+      else update(key, value)
+    },
+    clear: function () {
+      cache = Object.create(null)
+      _cache = Object.create(null)
+    }
+  }
+}
+
+
+
+
+
+
+
+
+},{}],4:[function(require,module,exports){
 function createMem(number, limit) {
     var mem = Object.create(bucketsProto)
     mem.N = number
@@ -230,7 +285,110 @@ module.exports = function(opts) {
 
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+'use strict';
+
+class LRU {
+  constructor(max) {
+    this.max = max;
+    this.size = 0;
+    this.cache = new Map();
+    this._cache = new Map();
+  }
+
+  get(key, options) {
+    let item = this.cache.get(key);
+    const maxAge = options && options.maxAge;
+    if (item) {
+      const now = Date.now();
+      // check expired
+      if (item.expired && now > item.expired) {
+        item.expired = 0;
+        item.value = undefined;
+      } else {
+        // update expired in get
+        if (maxAge !== undefined) {
+          const expired = maxAge ? now + maxAge : 0;
+          item.expired = expired;
+        }
+      }
+      return item.value;
+    }
+
+    // try to read from _cache
+    item = this._cache.get(key);
+    if (item) {
+      const now = Date.now();
+      // check expired
+      if (item.expired && now > item.expired) {
+        item.expired = 0;
+        item.value = undefined;
+      } else {
+        // not expired, save to cache
+        this._update(key, item);
+        // update expired in get
+        if (maxAge !== undefined) {
+          const expired = maxAge ? now + maxAge : 0;
+          item.expired = expired;
+        }
+      }
+      return item.value;
+    }
+  }
+
+  set(key, value, options) {
+    const maxAge = options && options.maxAge;
+    const expired = maxAge ? Date.now() + maxAge : 0;
+    let item = this.cache.get(key);
+    if (item) {
+      item.expired = expired;
+      item.value = value;
+    } else {
+      item = {
+        value,
+        expired,
+      };
+      this._update(key, item);
+    }
+  }
+
+  keys() {
+    const cacheKeys = new Set();
+    const now = Date.now();
+
+    for (const entry of this.cache.entries()) {
+      checkEntry(entry);
+    }
+
+    for (const entry of this._cache.entries()) {
+      checkEntry(entry);
+    }
+
+    function checkEntry(entry) {
+      const key = entry[0];
+      const item = entry[1];
+      if (entry[1].value && (!entry[1].expired) || item.expired >= now) {
+        cacheKeys.add(key);
+      }
+    }
+
+    return Array.from(cacheKeys.keys());
+  }
+
+  _update(key, item) {
+    this.cache.set(key, item);
+    this.size++;
+    if (this.size >= this.max) {
+      this.size = 0;
+      this._cache = this.cache;
+      this.cache = new Map();
+    }
+  }
+}
+
+module.exports = LRU;
+
+},{}],6:[function(require,module,exports){
 const MemoryCache = require("fast-memory-cache");
 
 const instance = new MemoryCache();
@@ -241,7 +399,18 @@ const remove = (key) => instance.delete(key);
 
 module.exports = { set, get, remove }
 
-},{"fast-memory-cache":2}],5:[function(require,module,exports){
+},{"fast-memory-cache":2}],7:[function(require,module,exports){
+var HLRU = require('hashlru')
+
+const instance = HLRU(10000000);
+
+const set = (key, val) => instance.set(key, val);
+const get = (key) => instance.get(key);
+const remove = (key) => instance.remove(key + "");
+
+module.exports = { set, get, remove }
+
+},{"hashlru":3}],8:[function(require,module,exports){
 var safeMemoryCache = require('safe-memory-cache');
 var instance = safeMemoryCache({ limit: 10000000 });
 
@@ -251,7 +420,7 @@ const remove = (key) => instance.set(key + "", undefined); // remove is not supp
 
 module.exports = { set, get, remove }
 
-},{"safe-memory-cache":3}],6:[function(require,module,exports){
+},{"safe-memory-cache":4}],9:[function(require,module,exports){
 const map = {};
 
 const set = (key, val) => map[key] = val
@@ -260,4 +429,15 @@ const remove = (key) => delete map[key]
 
 module.exports = { set, get, remove };
 
-},{}]},{},[1]);
+},{}],10:[function(require,module,exports){
+var LRU = require('ylru')
+
+const instance = new LRU(10000000);
+
+const set = (key, val) => instance.set(key, val);
+const get = (key) => instance.get(key);
+const remove = (key) => instance.set(key, undefined);
+
+module.exports = { set, get, remove }
+
+},{"ylru":5}]},{},[1]);

@@ -7,7 +7,9 @@ const caches = {
     // "cache": require("./src/adapters/cache"),
     // "node-memory-cache": require("./src/adapters/node-memory-cache"), // This one is the slowest
     "safe-memory-cache": require("./src/adapters/safe-memory-cache"),
-    "simplest-cache": require("./src/adapters/simplest-cache")
+    "simplest-cache": require("./src/adapters/simplest-cache"),
+    "hashlru": require("./src/adapters/hashlru"),
+    "ylru": require("./src/adapters/ylru")
 };
 
 const benchmark = SIZE => {

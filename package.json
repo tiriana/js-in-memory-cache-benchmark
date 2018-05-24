@@ -14,11 +14,13 @@
     "cache": "^2.1.0",
     "cache-memory": "^2.1.2",
     "fast-memory-cache": "^2.0.4",
+    "hashlru": "^2.2.1",
     "mem-cache": "0.0.5",
     "memory-cache": "^0.2.0",
     "memorycache": "0.0.1",
     "node-memory-cache": "0.0.5",
-    "safe-memory-cache": "^1.5.1"
+    "safe-memory-cache": "^1.5.1",
+    "ylru": "^1.2.0"
   },
   "devDependencies": {
     "browserify": "^16.2.2"

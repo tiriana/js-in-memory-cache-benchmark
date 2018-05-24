@@ -1,6 +1,7 @@
-const set = (key, val) => null;
-const get = (key) => null;
-const clear = () => null;
-const remove = (key) => null;
+const map = {};
 
-module.exports = { set, get, clear, remove }
+const set = (key, val) => map[key] = val
+const get = (key) => map[key];
+const remove = (key) => delete map[key]
+
+module.exports = { set, get, remove };

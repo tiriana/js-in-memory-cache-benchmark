@@ -7,4 +7,4 @@ const get = (key) => instance.get(key);
 const clear = () => instance.data = {};
 const remove = (key) => instance.del(key);
 
-module.exports = { set, get, clear, remove }
+module.exports = { set, get, remove }

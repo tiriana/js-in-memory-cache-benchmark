@@ -1,12 +1,12 @@
-const size = 10000;
-const times = 123;
+const size = 1000000;
+const times = 1;
 
 const getData = size => [...Array(size)].reduce((data, key) => (data[Math.random()] = Math.random(), data), {});
 const Benchmark = require("benchmark");
 let memoryCacheSuite = new Benchmark.Suite("Memoty cache");
 
 const cachesNames = [
-    // "cache-memory",
+    "cache-memory",
     "fast-memory-cache",
     "mem-cache",
     "memory-cache",
@@ -38,11 +38,9 @@ const runTestCase = cache => {
 
         cache.remove(keys[idx]);
     }
-
-    cache.clear();
 };
 
-const summary = {};
+const summary = [];
 
 Object.keys(caches).forEach(cacheName => {
     try {
@@ -50,9 +48,9 @@ Object.keys(caches).forEach(cacheName => {
         for (let t = 0; t < times; t ++) {
             runTestCase(caches[cacheName]);
         }
-        summary[cacheName] = Date.now() - now;
+        summary.push({ name: cacheName, result: Date.now() - now });
     } catch (e) {
-        summary[cacheName] = `Throws ${e.message}`;
+        summary.push({ name: cacheName, result: `Throws ${e.message}` });
     };
 
     // memoryCacheSuite = memoryCacheSuite.add(cacheName, function() {
@@ -67,5 +65,6 @@ Object.keys(caches).forEach(cacheName => {
 //         'async': true
 //     });
 
+summary.sort((a,b) => a.result - b.result);
 
 console.log(summary);

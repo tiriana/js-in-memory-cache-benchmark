@@ -33,6 +33,8 @@ const clear = () => map = {}
 | safe-memory-cache | yes | yes | no | yes | yes | no | yes |
 | ylru | yes | yes | no | yes | yes | no | yes |
 
+Other implementation are slow or very slow (or I just cannot use them. If you want - pls check source code of my test)
+
 * If you just need `get`, `set`, `remove` - just write your version of `simplest-cache` (or use the one above)
 * If you need TTL (Time To Live) per value - use `fast-memory-cache`
 * If you need to control MAX size of your cache - use `hashlru` | `safe-memory-cache` | `ylru`.
